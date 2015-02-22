@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'import_export',
     'petrol_server.app.petrol',
     'django.contrib.admin',
     'django.contrib.auth',

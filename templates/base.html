@@ -1,10 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/static/petrol/style.css">
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-{% block upload-file %}{% endblock %}
+    <script type="text/javascript">
+        $(function() {
+            $.datepicker.setDefaults( {dateFormat: "dd.mm.yy"} );
+            $( "#id_start_period" ).datepicker();
+            $( "#id_end_period" ).datepicker();
+        });
+    </script>
+    {% block list-trsnsactions %}{% endblock %}
 </body>
 </html>

@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='Card',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('number', models.IntegerField()),
+                ('number', models.DecimalField(max_digits=20, decimal_places=0)),
             ],
             options={
             },
@@ -26,10 +26,11 @@ class Migration(migrations.Migration):
             name='CardTransaction',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('fuel', models.CharField(max_length=300)),
-                ('volume', models.FloatField()),
-                ('price', models.DecimalField(max_digits=8, decimal_places=2)),
                 ('made_at', models.DateTimeField()),
+                ('fuel', models.CharField(max_length=300)),
+                ('volume', models.DecimalField(max_digits=6, decimal_places=2)),
+                ('price', models.DecimalField(max_digits=8, decimal_places=2)),
+                ('card', models.ForeignKey(to='petrol.Card')),
             ],
             options={
             },
@@ -49,7 +50,7 @@ class Migration(migrations.Migration):
             name='PetrolStation',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('azs_address', models.CharField(max_length=200)),
+                ('address', models.CharField(max_length=200)),
             ],
             options={
             },
@@ -73,14 +74,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='cardtransaction',
-            name='azs',
+            name='petrol_station',
             field=models.ForeignKey(to='petrol.PetrolStation'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='cardtransaction',
-            name='card',
-            field=models.ForeignKey(to='petrol.Card'),
             preserve_default=True,
         ),
         migrations.AddField(

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}PetrolServer{% endblock %}
+
+{% block list-trsnsactions %}
+    <div>
+        <p> Выбрать период: </p>
+        <form action="" method="GET">
+            {{ form.start_period }}
+            {{ form.end_period }}
+            <input type="submit" value="Показать">
+        </form>
+    </div>
+
+    <div class="table">
+        {% for row in transactions %}
+            <p>{{ row.made_at|date:"d.m.Y" }} | {{ row.card }} | {{ row.petrol_station.address }}</p>
+        {% endfor %}
+    </div>
+{% endblock %}

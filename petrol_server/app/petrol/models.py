@@ -41,4 +41,6 @@ class CardTransaction(models.Model):
     fuel = models.CharField(max_length=300)
     volume = models.DecimalField(max_digits=6, decimal_places=2)
     price = models.DecimalField(max_digits=8, decimal_places=2)
+    def __unicode__(self):
+        return unicode(self.made_at)
 

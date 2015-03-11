@@ -1,30 +1,44 @@
-
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.core.context_processors import csrf
-from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
 from petrol_server.app.petrol.forms import PeriodForm
-from petrol_server.app.petrol.utils import render_decorator
+from petrol_server.app.petrol.utils import staff_required
 from datetime import datetime
 
 @login_required(login_url='accounts/login/')
-@render_decorator(template='card_transactions.html')
+@staff_required(redirect_url='/admin/')
 def main(request):
+    try:
+        company = models.Company.objects.get(users__user__id=request.user.id)
+    except ObjectDoesNotExist as e:
+
+        return render_to_response('errors.html', {'error': e} )
+
     if request.method == 'GET':
         form = PeriodForm(request.GET)
         if form.is_valid():
             start_period = datetime.strptime(form['start_period'].value(), '%d.%m.%Y')
             end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
-            comp = models.Company.objects.filter(users__user__id=request.user.id)
 
-            transactions = models.CardTransaction.objects.filter(card__company__id=comp[0].id).filter(
-                                                                 made_at__range=[start_period, end_period])
+            transactions = models.CardTransaction.objects.filter(
+                card__company__id=company.id).filter(
+                made_at__range=[start_period, end_period]
+            )
+            cont = {'transactions': transactions,
+                    'form': PeriodForm,
+                    'company': company, }
 
-            cont = {'transactions': transactions, 'form': PeriodForm }
-            cont.update(csrf(request))
-            return cont
-    cont = {'form': PeriodForm}
-    return cont
+            return render_to_response('card_transactions.html', cont)
+    cont = {'form': PeriodForm, 'company': company}
+    return render_to_response('card_transactions.html', cont)
+
+
+@login_required(login_url='accounts/login/')
+def logout_view(request):
+    logout(request)
+    return render_to_response('success_logout.html')
 
 
 

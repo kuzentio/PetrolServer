@@ -9,7 +9,7 @@
     {% endif %}
 {% endblock %}
 {% block list-trsnsactions %}
-    <div>
+    <div class="container">
         <p>Кабинет компании {{ company.title }}</p>
     </div>
     <div>
@@ -23,7 +23,14 @@
 
     <div class="table">
         {% for row in transactions %}
-            <p>{{ row.made_at|date:"d.m.Y" }} | {{ row.card }} | {{ row.petrol_station.address }}</p>
+            <p>
+                {{ row.made_at|date:"d.m.Y" }} |
+                {{ row.card }} |
+                {{ row.petrol_station.address }}|
+                {{ row.fuel }} |
+                {{ row.volume }} |
+                {{ row.price }}
+            </p>
         {% endfor %}
     </div>
 {% endblock %}

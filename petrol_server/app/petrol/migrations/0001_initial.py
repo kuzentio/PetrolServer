@@ -26,10 +26,11 @@ class Migration(migrations.Migration):
             name='CardTransaction',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('made_at', models.DateTimeField()),
+                ('made_at', models.DateField()),
                 ('fuel', models.CharField(max_length=300)),
                 ('volume', models.DecimalField(max_digits=6, decimal_places=2)),
                 ('price', models.DecimalField(max_digits=8, decimal_places=2)),
+                ('is_approved', models.BooleanField(default=False)),
                 ('card', models.ForeignKey(to='petrol.Card')),
             ],
             options={
@@ -60,6 +61,8 @@ class Migration(migrations.Migration):
             name='User',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('sms_telephone', models.CharField(max_length=13, blank=True)),
+                ('fax_telephone', models.CharField(max_length=13, blank=True)),
                 ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -68,8 +71,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='company',
-            name='users',
-            field=models.ManyToManyField(to='petrol.User'),
+            name='user',
+            field=models.ForeignKey(to='petrol.User'),
             preserve_default=True,
         ),
         migrations.AddField(

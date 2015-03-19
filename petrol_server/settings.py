@@ -89,7 +89,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-SHORT_DATE_FORMAT = ('%d.%m.%Y',)
+#SHORT_DATE_FORMAT = ('%d.%m.%Y',)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/

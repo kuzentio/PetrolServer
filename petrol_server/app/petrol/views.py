@@ -13,8 +13,7 @@ def main(request):
     try:
         company = models.Company.objects.get(users__user__id=request.user.id)
     except ObjectDoesNotExist as e:
-
-        return render_to_response('errors.html', {'error': e} )
+        return render_to_response('errors.html', {'error': e})
 
     if request.method == 'GET':
         form = PeriodForm(request.GET)

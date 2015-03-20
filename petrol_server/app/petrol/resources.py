@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.encoding import force_text
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, DateWidget
 from petrol_server.app.petrol import models
@@ -51,6 +50,7 @@ class TransactionResource(resources.ModelResource):
         column_name=u'цена без скидки',
         attribute="price"
     )
+
 
     class Meta:
         model = models.CardTransaction

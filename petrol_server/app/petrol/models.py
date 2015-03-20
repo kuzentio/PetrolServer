@@ -51,6 +51,7 @@ class CardTransaction(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
     is_approved = models.BooleanField(default=False)
+    is_no_need_attention = models.BooleanField(default=True)
 
 
     #def __unicode__(self):

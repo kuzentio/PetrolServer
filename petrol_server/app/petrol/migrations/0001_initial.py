@@ -31,6 +31,7 @@ class Migration(migrations.Migration):
                 ('volume', models.DecimalField(max_digits=6, decimal_places=2)),
                 ('price', models.DecimalField(max_digits=8, decimal_places=2)),
                 ('is_approved', models.BooleanField(default=False)),
+                ('is_no_need_attention', models.BooleanField(default=True)),
                 ('card', models.ForeignKey(to='petrol.Card')),
             ],
             options={

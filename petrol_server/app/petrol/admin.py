@@ -30,7 +30,7 @@ class CardTransactionsAdmin(ImportExportModelAdmin):
         queryset.update(is_approved=False)
 
     actions = ['make_approved', 'make_not_approved']
-    list_display = ['made_at', 'card', 'is_approved']
+    list_display = ['made_at', 'card', 'is_approved', 'is_no_need_attention']
     resource_class = TransactionResource
     make_approved.short_description = u'Провести эти транзакции'
     make_not_approved.short_description = u'Не проводить эти транзакции'

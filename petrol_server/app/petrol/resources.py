@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import ObjectDoesNotExist
 from import_export import resources, fields
+from import_export.resources import Resource
 from import_export.widgets import ForeignKeyWidget, DateWidget
 from petrol_server.app.petrol import models
 
@@ -8,6 +9,11 @@ from petrol_server.app.petrol import models
 class CustomModelInstanceLoader(resources.ModelInstanceLoader):
     def get_instance(self, row):
         return None
+
+class CustomResorce(Resource):
+    def before_save_instance(self, instance, dry_run):
+        if instance.volume <= 0:
+            instance.is_no_need_attention=False
 
 
 class CustomForeignKeyWidget(ForeignKeyWidget):

@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.contrib.auth import models as auth_models
 
@@ -21,10 +22,9 @@ class Company(models.Model):
 
 class Card(models.Model):
     number = models.DecimalField(max_digits=20, decimal_places=0)
-    company = models.ForeignKey(Company)
 
     def __unicode__(self):
-        return u'%s - %s' % (self.number, self.company)
+        return unicode(self.number)
 
 
 class PetrolStation(models.Model):
@@ -32,6 +32,14 @@ class PetrolStation(models.Model):
 
     def __unicode__(self):
         return unicode(self.address)
+
+
+class CurrentCardHolder(models.Model):
+    card = models.ForeignKey(Card)
+    company = models.ForeignKey(Company)
+    date = models.DateField(default=datetime.date.today)
+    def __unicode__(self):
+        return u'%s - %s' % (self.card, self.company)
 
 
 class CardTransaction(models.Model):

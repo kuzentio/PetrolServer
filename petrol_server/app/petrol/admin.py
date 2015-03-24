@@ -31,7 +31,9 @@ class CardTransactionsAdmin(ImportExportModelAdmin):
 
     actions = ['make_approved', 'make_not_approved']
     list_display = ['made_at', 'card', 'is_approved', 'is_no_need_attention']
+    ordering = ['made_at',]
     resource_class = TransactionResource
+
     make_approved.short_description = u'Провести эти транзакции'
     make_not_approved.short_description = u'Не проводить эти транзакции'
 
@@ -40,7 +42,8 @@ class CardTransactionsAdmin(ImportExportModelAdmin):
 
 
 admin.site.register(models.User)
-admin.site.register(models.Card)
 admin.site.register(models.Company)
+admin.site.register(models.Card)
 admin.site.register(models.CardTransaction, CardTransactionsAdmin)
+admin.site.register(models.CurrentCardHolder)
 

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import datetime
 from django.conf import settings
 
 
@@ -49,6 +50,18 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='CurrentCardHolder',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date', models.DateField(default=datetime.date.today)),
+                ('card', models.ForeignKey(to='petrol.Card')),
+                ('company', models.ForeignKey(to='petrol.Company')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='PetrolStation',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -80,12 +93,6 @@ class Migration(migrations.Migration):
             model_name='cardtransaction',
             name='petrol_station',
             field=models.ForeignKey(to='petrol.PetrolStation'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='card',
-            name='company',
-            field=models.ForeignKey(to='petrol.Company'),
             preserve_default=True,
         ),
     ]

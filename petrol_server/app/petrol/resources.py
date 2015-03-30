@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.encoding import force_text
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, DateWidget
 from petrol_server.app.petrol import models
@@ -11,11 +12,11 @@ class CustomModelInstanceLoader(resources.ModelInstanceLoader):
         return None
 
 
-class CustomForeignKeyWidget(ForeignKeyWidget):
+class PetrolStationWidget(ForeignKeyWidget):
 
     def clean(self, value):
         try:
-            return super(CustomForeignKeyWidget, self).clean(value)
+            return super(PetrolStationWidget, self).clean(value)
         except ObjectDoesNotExist:
             return models.PetrolStation.objects.create(address=value)
 
@@ -25,13 +26,13 @@ class TransactionResource(resources.ModelResource):
     card = fields.Field(
         column_name=u'карта',
         attribute="card",
-        widget=ForeignKeyWidget(models.Card, field='number'),
+        widget=ForeignKeyWidget(model=models.Card, field='number'),
     )
 
     petrol_station = fields.Field(
         column_name=u'адрес азс',
         attribute="petrol_station",
-        widget=CustomForeignKeyWidget(models.PetrolStation, field='address'),
+        widget=PetrolStationWidget(model=models.PetrolStation, field='address'),
     )
 
     made_at = fields.Field(
@@ -52,6 +53,7 @@ class TransactionResource(resources.ModelResource):
         column_name=u'цена без скидки',
         attribute="price"
     )
+    #card_holder = fields.Field()
 
 
     class Meta:
@@ -61,7 +63,6 @@ class TransactionResource(resources.ModelResource):
         instance_loader_class = CustomModelInstanceLoader
         fields = ('made_at', 'card', 'petrol_station', 'fuel', 'volume', 'price',)
         exclude = ('id',)
-        import_id_fields = ['made_at', 'card', 'azs', 'fuel', 'volume', 'price']
-        widgets = {
-                'made_at': {'format': '%d.%m.%Y'},
-                }
+        import_id_fields = ['made_at', 'card', 'azs', 'fuel', 'volume', 'price',]
+
+

@@ -1,4 +1,3 @@
-import datetime
 from django.db import models
 from django.contrib.auth import models as auth_models
 
@@ -21,7 +20,7 @@ class Company(models.Model):
 
 
 class Card(models.Model):
-    number = models.DecimalField(max_digits=20, decimal_places=0)
+    number = models.DecimalField(decimal_places=0, max_digits=20)
 
     def __unicode__(self):
         return unicode(self.number)
@@ -34,24 +33,22 @@ class PetrolStation(models.Model):
         return unicode(self.address)
 
 
-class CurrentCardHolder(models.Model):
+
+class Cardholder(models.Model):
     card = models.ForeignKey(Card)
     company = models.ForeignKey(Company)
-    date = models.DateField(default=datetime.date.today)
+    date = models.DateTimeField(auto_now_add=True)
+
     def __unicode__(self):
         return u'%s - %s' % (self.card, self.company)
 
 
 class CardTransaction(models.Model):
-    #FUEL_DT, FUEL_92, FUEL_95 = range(3)
-    #CHOICES_STATUS = [
-    #    (FUEL_DT, 'dt'),
-    #    (FUEL_92, '92'),
-    #    (FUEL_95, '95'),
-    #]
     made_at = models.DateField()
 
-    card = models.ForeignKey(Card)
+    card = models.ForeignKey(Card) #TODO:It can be removed
+
+    card_holder = models.ForeignKey(Cardholder)
     petrol_station = models.ForeignKey(PetrolStation)
 
     fuel = models.CharField(max_length=300)
@@ -59,9 +56,6 @@ class CardTransaction(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
     is_approved = models.BooleanField(default=False)
+
+    # TODO: delete this field
     is_no_need_attention = models.BooleanField(default=True)
-
-
-    #def __unicode__(self):
-    #    return unicode(self.made_at)
-

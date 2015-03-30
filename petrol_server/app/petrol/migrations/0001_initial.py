@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import datetime
 from django.conf import settings
 
 
@@ -24,6 +23,17 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
+            name='Cardholder',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date', models.DateTimeField(auto_now_add=True)),
+                ('card', models.ForeignKey(to='petrol.Card')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='CardTransaction',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -34,6 +44,7 @@ class Migration(migrations.Migration):
                 ('is_approved', models.BooleanField(default=False)),
                 ('is_no_need_attention', models.BooleanField(default=True)),
                 ('card', models.ForeignKey(to='petrol.Card')),
+                ('card_holder', models.ForeignKey(to='petrol.Cardholder')),
             ],
             options={
             },
@@ -44,18 +55,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('title', models.CharField(max_length=100)),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='CurrentCardHolder',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date', models.DateField(default=datetime.date.today)),
-                ('card', models.ForeignKey(to='petrol.Card')),
-                ('company', models.ForeignKey(to='petrol.Company')),
             ],
             options={
             },
@@ -93,6 +92,12 @@ class Migration(migrations.Migration):
             model_name='cardtransaction',
             name='petrol_station',
             field=models.ForeignKey(to='petrol.PetrolStation'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='cardholder',
+            name='company',
+            field=models.ForeignKey(to='petrol.Company'),
             preserve_default=True,
         ),
     ]

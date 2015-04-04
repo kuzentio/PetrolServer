@@ -44,4 +44,5 @@ admin.site.register(models.Company)
 admin.site.register(models.Card)
 admin.site.register(models.CardTransaction, CardTransactionsAdmin)
 admin.site.register(models.Cardholder)
+admin.site.register(models.Payment)
 

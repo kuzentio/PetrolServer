@@ -39,6 +39,7 @@ class Cardholder(models.Model):
     company = models.ForeignKey(Company)
     date = models.DateTimeField(auto_now_add=True)
 
+
     def __unicode__(self):
         return u'%s - %s' % (self.card, self.company)
 
@@ -46,7 +47,7 @@ class Cardholder(models.Model):
 class CardTransaction(models.Model):
     made_at = models.DateField()
 
-    card = models.ForeignKey(Card) #TODO:It can be removed
+    card = models.ForeignKey(Card)
 
     card_holder = models.ForeignKey(Cardholder)
     petrol_station = models.ForeignKey(PetrolStation)
@@ -59,3 +60,12 @@ class CardTransaction(models.Model):
 
     # TODO: delete this field
     is_no_need_attention = models.BooleanField(default=True)
+
+
+class Payment(models.Model):
+    company = models.ForeignKey(Company)
+    amount = models.DecimalField(max_digits=20, decimal_places=2)
+    date = models.DateTimeField(editable=True)
+    def __unicode__(self):
+        return u'%s - %s' % (self.amount, self.company)
+

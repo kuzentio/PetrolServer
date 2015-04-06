@@ -30,17 +30,19 @@ class CardTransactionsAdmin(ImportExportModelAdmin):
         queryset.update(is_approved=False)
 
     actions = ['make_approved', 'make_not_approved']
-    list_display = ['made_at', 'card', 'is_approved']
+    list_display = ['made_at', 'is_approved', 'is_no_need_attention', 'card_holder']
+    ordering = ['made_at',]
     resource_class = TransactionResource
+
     make_approved.short_description = u'Провести эти транзакции'
     make_not_approved.short_description = u'Не проводить эти транзакции'
 
 
 
-
-
 admin.site.register(models.User)
-admin.site.register(models.Card)
 admin.site.register(models.Company)
+admin.site.register(models.Card)
 admin.site.register(models.CardTransaction, CardTransactionsAdmin)
+admin.site.register(models.Cardholder)
+admin.site.register(models.Payment)
 

@@ -2,5 +2,4 @@
 .idea
 *.pyc
 /temp
-/migrations/
-
+/petrol_server/app/petrol/migrations/*

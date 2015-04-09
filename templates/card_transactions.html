@@ -3,10 +3,8 @@
 {% block title %}PetrolServer{% endblock %}
 
 {% block balance %}
-
     <p>Кабинет компании {{ company.title }}</p>
     <span>Ваш баланс: <a href="/balance/{{ company.id }}">{{ balance }}</a></span>
-
 {% endblock %}
 
 
@@ -18,6 +16,7 @@
         <input type="submit" value="Показать">
     </form>
 {% endblock %}
+
 
 {% block list_trsnsactions %}
 
@@ -47,7 +46,6 @@
             {% endfor %}
         </tbody>
     </table>
-
 {% endblock %}
 
 {% block logout %}

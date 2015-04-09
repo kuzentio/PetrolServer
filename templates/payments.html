@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block payments %}
-
     <table class="table">
         <thead>
             <tr>
@@ -20,7 +19,9 @@
             {% endfor %}
         </tbody>
     </table>
-
+    <form method="GET" action="/">
+        <input class="btn btn-info" type="submit" value="Назад">
+    </form>
 {% endblock %}
 
 
@@ -29,3 +30,4 @@
         <input class="btn btn-default" type="submit" value="Выход">
     </form>
 {% endblock %}
+

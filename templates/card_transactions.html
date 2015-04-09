@@ -1,43 +1,55 @@
 {% extends 'base.html' %}
 
 {% block title %}PetrolServer{% endblock %}
-{% block errors %}
-    {% if error %}
-        {% for e in error %}
-            <p> Ошибка: {{ e }} </p>
-        {% endfor %}
-    {% endif %}
-{% endblock %}
-{% block list-trsnsactions %}
-    <div class="container">
-        <p>Кабинет компании {{ company.title }}</p>
-    </div>
-    <div>
-        <p> Выбрать период: </p>
-        <form action="" method="GET">
-            {{ form.start_period }}
-            {{ form.end_period }}
-            <input type="submit" value="Показать">
-        </form>
-    </div>
 
-    <div class="table">
-        {% for row in transactions %}
-            <p>
-                {{ row.made_at|date:"d.m.Y" }} |
-                {{ row.card }} |
-                {{ row.petrol_station.address }}|
-                {{ row.fuel }} |
-                {{ row.volume }} |
-                {{ row.price }}
-            </p>
-        {% endfor %}
-    </div>
+{% block balance %}
+    <p>Кабинет компании {{ company.title }}</p>
+    <span>Ваш баланс: <a href="/balance/{{ company.id }}">{{ balance }}</a></span>
+{% endblock %}
+
+
+{% block date_form %}
+    <p> Выбрать период: </p>
+    <form action="" method="GET">
+        {{ form.start_period }}
+        {{ form.end_period }}
+        <input type="submit" value="Показать">
+    </form>
+{% endblock %}
+
+
+{% block list_trsnsactions %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th> Дата </th>
+                <th> Номер караты </th>
+                <th> Адрес АЗС </th>
+                <th> Топливо </th>
+                <th> Количество </th>
+                <th> Цена </th>
+                <th> Сумма </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in transactions %}
+                <tr>
+                        <td>{{ row.made_at|date:"d.m.Y" }}</td>
+                        <td>{{ row.card }}</td>
+                        <td>{{ row.petrol_station.address }}</td>
+                        <td>{{ row.fuel }}</td>
+                        <td>{{ row.volume }}</td>
+                        <td>{{ row.price }}</td>
+                        <td>{{ row.amount }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 
 {% block logout %}
-    <br/>
     <form method="GET" action="/logout/">
-        <input type="submit" value="Выход">
+        <input class="btn btn-default" type="submit" value="Выход">
     </form>
 {% endblock %}

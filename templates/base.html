@@ -18,9 +18,15 @@
             $( "#id_end_period" ).datepicker();
         });
     </script>
-    {% block errors %}{% endblock %}
-    {% block list-trsnsactions %}{% endblock %}
-    {% block logout %}{% endblock %}
-    {% block success_messages %}{% endblock %}
+    <div class="container">
+        {% block errors %}{% endblock %}
+        {% block payments %}{% endblock %}
+        {% block balance %}{% endblock %}
+        {% block date_form %}{% endblock %}
+        {% block list_trsnsactions %}{% endblock %}
+
+        {% block logout %}{% endblock %}
+        {% block success_messages %}{% endblock %}
+    </div>
 </body>
 </html>

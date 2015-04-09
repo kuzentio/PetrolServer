@@ -1,19 +1,21 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
 from petrol_server.app.petrol.forms import PeriodForm
-from petrol_server.app.petrol.utils import staff_required
+from petrol_server.app.petrol.utils import staff_required, get_balance
 from datetime import datetime
 
 @login_required(login_url='accounts/login/')
 @staff_required(redirect_url='/admin/')
 def main(request):
     try:
-        company = models.Company.objects.get(users__user__id=request.user.id)
+        company = models.Company.objects.get(user__user__id=request.user.id)
     except ObjectDoesNotExist as e:
         return render_to_response('errors.html', {'error': e})
+    balance = get_balance(company)
 
     if request.method == 'GET':
         form = PeriodForm(request.GET)
@@ -22,16 +24,32 @@ def main(request):
             end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
 
             transactions = models.CardTransaction.objects.filter(
-                card__company__id=company.id).filter(
+                card_holder_id=company.id).filter(
                 made_at__range=[start_period, end_period]
+            ).annotate(
+                amount=Sum('id', field='volume * price')
             )
-            cont = {'transactions': transactions,
+            context = {'transactions': transactions,
                     'form': PeriodForm,
-                    'company': company, }
+                    'company': company,
+                    'balance': balance,
+                    }
 
-            return render_to_response('card_transactions.html', cont)
-    cont = {'form': PeriodForm, 'company': company}
-    return render_to_response('card_transactions.html', cont)
+            return render_to_response('card_transactions.html', context)
+    context = {'form': PeriodForm, 'company': company, 'balance': balance}
+    return render_to_response('card_transactions.html', context)
+
+
+@login_required(login_url='accounts/login/')
+@staff_required(redirect_url='/admin/')
+def balance(request, company_id):
+    payments = models.Payment.objects.filter(
+        company_id=company_id
+    )
+    context = {'payments': payments}
+
+    return render_to_response('payments.html', context)
+
 
 
 @login_required(login_url='accounts/login/')

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block payments %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th> Дата </th>
+                <th> Сумма пополнения </th>
+                <th> Баланс после пополнения </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in payments %}
+                <tr>
+                    <td>{{ row.date|date:"d.m.Y" }}</td>
+                    <td>{{ row.amount }}</td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <form method="GET" action="/">
+        <input class="btn btn-info" type="submit" value="Назад">
+    </form>
+{% endblock %}
+
+
+{% block logout %}
+    <form method="GET" action="/logout/">
+        <input class="btn btn-default" type="submit" value="Выход">
+    </form>
+{% endblock %}
+

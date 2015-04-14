@@ -31,7 +31,7 @@ def staff_required(redirect_url):
 
 def get_balance(company):
     consumption = models.CardTransaction.objects.filter(
-        card_holder_id=company.id
+        card_holder__company=company.id
     ).annotate(
         amount=Sum('id', field='volume * price')
     ).aggregate(

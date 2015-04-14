@@ -24,7 +24,7 @@ def main(request):
             end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
 
             transactions = models.CardTransaction.objects.filter(
-                card_holder_id=company.id).filter(
+                card_holder__company=company.id).filter(
                 made_at__range=[start_period, end_period]
             ).annotate(
                 amount=Sum('id', field='volume * price')

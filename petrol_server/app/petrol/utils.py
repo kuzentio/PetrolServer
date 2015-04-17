@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
@@ -29,16 +30,18 @@ def staff_required(redirect_url):
 #    pass
 
 
-def get_balance(company):
+def get_balance(company, date=datetime.datetime.now()):
     consumption = models.CardTransaction.objects.filter(
-        card_holder__company=company.id
+        card_holder__company=company.id,
+        made_at__range=['2011-01-01', date]
     ).annotate(
         amount=Sum('id', field='volume * price')
     ).aggregate(
         Sum('amount'))['amount__sum']
 
     payments = models.Payment.objects.filter(
-        company_id=company.id
+        company_id=company.id,
+        date__range=['2011-01-01', date]
     ).aggregate(Sum('amount'))['amount__sum']
     if not payments: payments = 0
     if not consumption: consumption = 0

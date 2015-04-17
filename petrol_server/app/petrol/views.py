@@ -28,8 +28,9 @@ def main(request):
                 made_at__range=[start_period, end_period]
             ).annotate(
                 amount=Sum('id', field='volume * price')
-            )
-            context = {'transactions': transactions,
+            ).order_by('made_at')
+            context = {
+                    'transactions': transactions,
                     'form': PeriodForm,
                     'company': company,
                     'balance': balance,
@@ -43,9 +44,17 @@ def main(request):
 @login_required(login_url='accounts/login/')
 @staff_required(redirect_url='/admin/')
 def balance(request, company_id):
+    try:
+        company = models.Company.objects.get(user__user__id=request.user.id)
+    except ObjectDoesNotExist as e:
+        return render_to_response('errors.html', {'error': e})
+
     payments = models.Payment.objects.filter(
         company_id=company_id
-    )
+    ).order_by('date')
+    for payment in payments:
+        payment.balance = get_balance(company, payment.date)
+
     context = {'payments': payments}
 
     return render_to_response('payments.html', context)

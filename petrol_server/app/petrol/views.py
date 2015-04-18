@@ -5,7 +5,7 @@ from django.db.models import Sum
 from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
 from petrol_server.app.petrol.forms import PeriodForm
-from petrol_server.app.petrol.utils import staff_required, get_balance
+from petrol_server.app.petrol.utils import staff_required, get_balance, company_decorator
 from datetime import datetime
 
 @login_required(login_url='accounts/login/')

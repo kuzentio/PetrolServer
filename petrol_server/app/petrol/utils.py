@@ -1,16 +1,19 @@
 import datetime
-from django.contrib.auth.decorators import user_passes_test
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
 
 
-def render_decorator(template):
+def company_decorator(user):
     def decorator(func):
         def inner(*args, **kwargs):
-            context = func(*args, **kwargs)
-            return render_to_response(template, context)
+            try:
+                company = models.Company.objects.get(user__user__id=user.id)
+            except ObjectDoesNotExist as e:
+                return render_to_response('errors.html', {'error': e})
+            return func(company, *args, **kwargs)
         return inner
     return decorator
 

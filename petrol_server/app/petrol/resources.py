@@ -65,4 +65,7 @@ class TransactionResource(resources.ModelResource):
         exclude = ('id',)
         import_id_fields = ['made_at', 'card', 'azs', 'fuel', 'volume', 'price',]
 
-
+    def before_save_instance(self, instance, dry_run):
+        instance.card_holder = models.Cardholder.objects.filter(card=instance.card).latest('date')
+        if instance.volume <= 0:
+            instance.is_no_need_attention=False

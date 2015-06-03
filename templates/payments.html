@@ -14,7 +14,7 @@
                 <tr>
                     <td>{{ row.date|date:"d.m.Y" }}</td>
                     <td>{{ row.amount }}</td>
-                    <td>{{ row.balance }}</td>
+                    <td>{{ row.balance|floatformat:2 }}</td>
                 </tr>
             {% endfor %}
         </tbody>

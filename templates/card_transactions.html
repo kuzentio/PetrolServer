@@ -4,7 +4,7 @@
 
 {% block balance %}
     <p>Кабинет компании {{ company.title }}</p>
-    <span>Ваш баланс: <a href="/balance/{{ company.id }}">{{ balance }}</a></span>
+    <span>Ваш баланс: <a href="/balance/{{ company.id }}">{{ balance|floatformat:2 }}</a></span>
 {% endblock %}
 
 
@@ -35,13 +35,13 @@
         <tbody>
             {% for row in transactions %}
                 <tr>
-                        <td>{{ row.made_at|date:"d.m.Y" }}</td>
-                        <td>{{ row.card }}</td>
-                        <td>{{ row.petrol_station.address }}</td>
-                        <td>{{ row.fuel }}</td>
-                        <td>{{ row.volume }}</td>
-                        <td>{{ row.price }}</td>
-                        <td>{{ row.amount }}</td>
+                    <td>{{ row.made_at|date:"d.m.Y" }}</td>
+                    <td>{{ row.card }}</td>
+                    <td>{{ row.petrol_station.address }}</td>
+                    <td>{{ row.fuel }}</td>
+                    <td>{{ row.volume }}</td>
+                    <td>{{ row.price }}</td>
+                    <td>{{ row.amount|floatformat:2 }}</td>
                 </tr>
             {% endfor %}
         </tbody>

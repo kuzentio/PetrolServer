@@ -15,7 +15,6 @@ class CardTransactionsAdmin(ImportExportModelAdmin):
 
         return queryset
 
-
     def get_actions(self, request):
         actions = super(CardTransactionsAdmin, self).get_actions(request)
         if not request.user.is_superuser:

@@ -33,12 +33,10 @@ class PetrolStation(models.Model):
         return unicode(self.address)
 
 
-
 class Cardholder(models.Model):
     card = models.ForeignKey(Card)
     company = models.ForeignKey(Company)
     date = models.DateTimeField(auto_now_add=True)
-
 
     def __unicode__(self):
         return u'%s - %s' % (self.card, self.company)
@@ -57,8 +55,6 @@ class CardTransaction(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
     is_approved = models.BooleanField(default=False)
-
-    # TODO: delete this field
     is_no_need_attention = models.BooleanField(default=True)
 
 
@@ -66,6 +62,7 @@ class Payment(models.Model):
     company = models.ForeignKey(Company)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     date = models.DateTimeField(editable=True)
+
     def __unicode__(self):
         return u'%s - %s' % (self.amount, self.company)
 

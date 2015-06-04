@@ -33,7 +33,11 @@ def main(request):
                     }
 
             return render_to_response('card_transactions.html', context)
-    context = {'form': PeriodForm, 'company': company, 'balance': balance}
+    context = {
+        'form': PeriodForm,
+        'company': company,
+        'balance': balance
+        }
     return render_to_response('card_transactions.html', context)
 
 

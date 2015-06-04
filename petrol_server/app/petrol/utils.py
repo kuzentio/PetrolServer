@@ -33,12 +33,26 @@ def staff_required(redirect_url):
 #def view(request):
 #    pass
 def get_transactions(company, start_period=None, end_period=None):
+
     return models.CardTransaction.objects.filter(
                 card_holder__company=company.id).filter(
                 made_at__range=[start_period, end_period]
             ).annotate(
                 amount=Sum('price', field='volume * price')
             ).order_by('made_at')
+
+def get_transactions_new(company, start_period=None, end_period=None):
+    transactions_data = []
+    card_transaction = ()
+    transactions = models.CardTransaction.objects.filter(
+                card_holder__company=company.id).filter(
+                made_at__range=[start_period, end_period]
+            ).annotate(
+                amount=Sum('price', field='volume * price')
+            ).order_by('made_at')
+
+    for transaction in transactions:
+        pass
 
 def get_balance(company, on_date=datetime.datetime.now()):
     consumption = get_transactions(

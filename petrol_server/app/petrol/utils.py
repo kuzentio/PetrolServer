@@ -41,9 +41,10 @@ def get_transactions(company, start_period=None, end_period=None):
                 amount=Sum('price', field='volume * price')
             ).order_by('made_at')
 
-def get_transactions_new(company, start_period=None, end_period=None):
+
+def get_card_transactions(company, start_period=None, end_period=None):
     transactions_data = []
-    card_transaction = ()
+
     transactions = models.CardTransaction.objects.filter(
                 card_holder__company=company.id).filter(
                 made_at__range=[start_period, end_period]
@@ -51,8 +52,21 @@ def get_transactions_new(company, start_period=None, end_period=None):
                 amount=Sum('price', field='volume * price')
             ).order_by('made_at')
 
-    for transaction in transactions:
-        pass
+    cards = transactions.values_list('card', flat=True).distinct()
+
+    for card in cards:
+        card_transaction = ()
+        amount_litres = 0
+        amount_money = 0
+        for transaction in transactions:
+            if transaction.card.id == card:
+                card_transaction = card_transaction + (transaction, )
+                amount_litres = amount_litres + transaction.volume
+                amount_money = amount_money + transaction.amount
+        transactions_data.append((card, ) + card_transaction + (amount_litres, ) + (amount_money,))
+
+    return None
+
 
 def get_balance(company, on_date=datetime.datetime.now()):
     consumption = get_transactions(

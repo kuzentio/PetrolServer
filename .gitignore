@@ -3,3 +3,4 @@
 *.pyc
 /temp
 /petrol_server/app/petrol/migrations/*
+settings_local.py

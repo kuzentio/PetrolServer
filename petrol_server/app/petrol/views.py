@@ -25,6 +25,7 @@ def main(request):
             end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
             #TODO: rebuild form!!!
             transactions = utils.get_transactions(company, start_period, end_period)
+            # card_transactions = utils.get_cards_transactions(company, start_period, end_period)
             context = {
                     'transactions': transactions,
                     'form': PeriodForm,

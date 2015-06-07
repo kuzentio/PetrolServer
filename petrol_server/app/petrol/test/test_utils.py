@@ -16,4 +16,21 @@ class TestBalance(TestCase):
         self.assertEqual(len(models.CardTransaction.objects.all()), 2)
         self.assertEqual(balance, -158)
 
-    #TODO: Write test for balance on date
+
+class TestTransactions(TestCase):
+    def test_transaction(self):
+        company = factories.CompanyFactory()
+        card1 = factories.CardFactory(number=1)
+        card2 = factories.CardFactory(number=2)
+        cardholder1 = factories.CardHolderFactory(card=card1, company=company)
+        cardholder2 = factories.CardHolderFactory(card=card2, company=company)
+        period = ['2011-01-01', '2012-01-01']
+
+        factories.CardTransactionFactory(volume=10, price=22, card=card1, card_holder=cardholder1)
+        factories.CardTransactionFactory(volume=10, price=23.80, card=card2, card_holder=cardholder2)
+        factories.CardTransactionFactory(volume=100, price=23.80, card=card2, card_holder=cardholder2)
+
+        transactions = utils.get_card_transactions(company, start_period=period[0], end_period=period[1])
+
+        self.assertEqual(1, 2)
+

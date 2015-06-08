@@ -52,20 +52,14 @@ def get_card_transactions(company, start_period=None, end_period=None):
                 amount=Sum('price', field='volume * price')
             ).order_by('made_at')
 
-    cards = transactions.values_list('card', flat=True).distinct()
+    seen = set()
+    cards = [transaction.card for transaction in transactions if transaction.card not in seen and not seen.add(transaction.card)]
 
     for card in cards:
-        card_transaction = ()
-        amount_litres = 0
-        amount_money = 0
-        for transaction in transactions:
-            if transaction.card.id == card:
-                card_transaction = card_transaction + (transaction, )
-                amount_litres = amount_litres + transaction.volume
-                amount_money = amount_money + transaction.amount
-        transactions_data.append((card, ) + card_transaction + (amount_litres, ) + (amount_money,))
-
-    return None
+        amount_litres = transactions.filter(card=card).aggregate(amount=Sum('volume', field='volume'))
+        amount_money = transactions.filter(card=card).aggregate(total=Sum('amount'))
+        transactions_data.append(((card.number, ) + (transactions.filter(card=card),) + (amount_litres, ) + (amount_money,)))
+    return transactions_data
 
 
 def get_balance(company, on_date=datetime.datetime.now()):

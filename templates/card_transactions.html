@@ -21,30 +21,38 @@
 {% block list_trsnsactions %}
 
     <table class="table">
-        <thead>
-            <tr>
-                <th> Дата </th>
-                <th> Номер карты </th>
-                <th> Адрес АЗС </th>
-                <th> Топливо </th>
-                <th> Количество </th>
-                <th> Цена </th>
-                <th> Сумма </th>
-            </tr>
-        </thead>
+        {% for card_transaction in card_transactions %}
         <tbody>
-            {% for row in transactions %}
-                <tr>
-                    <td>{{ row.made_at|date:"d.m.Y" }}</td>
-                    <td>{{ row.card }}</td>
-                    <td>{{ row.petrol_station.address }}</td>
-                    <td>{{ row.fuel }}</td>
-                    <td>{{ row.volume }}</td>
-                    <td>{{ row.price }}</td>
-                    <td>{{ row.amount|floatformat:2 }}</td>
-                </tr>
+            <tr>
+                <th>Карта {{ card_transaction.0 }}</th>
+            </tr>
+            <tr>
+                <th>Дата</th>
+                <th>Адрес АЗС</th>
+                <th>Топливо</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>Сумма</th>
+            </tr>
+
+            {% for transaction in card_transaction.1 %}
+            <tr>
+                <td>{{ transaction.made_at|date:"d.m.Y" }}</td>
+                <td>{{ transaction.petrol_station }}</td>
+                <td>{{ transaction.fuel }}</td>
+                <td>{{ transaction.volume }}</td>
+                <td>{{ transaction.price }}</td>
+                <td>{{ transaction.amount|floatformat:2 }}</td>
+            </tr>
             {% endfor %}
+            <tr>
+                <th>Всего литров: {{ card_transaction.2.amount }}</th>
+
+                <th>Всего грн: {{ card_transaction.3.total|floatformat:2 }}</th>
+            </tr>
+
         </tbody>
+        {% endfor %}
     </table>
 {% endblock %}
 

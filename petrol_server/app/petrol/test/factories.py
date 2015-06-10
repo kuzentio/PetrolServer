@@ -31,7 +31,7 @@ class CardFactory(DjangoModelFactory):
     class Meta:
         model = models.Card
         django_get_or_create = ('number',)
-    number = 123
+    number = u'123'
 
 
 class CardHolderFactory(DjangoModelFactory):

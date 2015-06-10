@@ -20,17 +20,17 @@ class TestBalance(TestCase):
 class TestTransactions(TestCase):
     def test_transaction(self):
         company = factories.CompanyFactory()
-        card1 = factories.CardFactory(number=1)
-        card2 = factories.CardFactory(number=2)
+        card1 = factories.CardFactory(number=u'1')
+        card2 = factories.CardFactory(number=u'2')
         cardholder1 = factories.CardHolderFactory(card=card1, company=company)
         cardholder2 = factories.CardHolderFactory(card=card2, company=company)
         period = ['2011-01-01', '2012-01-01']
 
-        factories.CardTransactionFactory(volume=10, price=22, card=card1, card_holder=cardholder1)
-        factories.CardTransactionFactory(volume=10, price=23.80, card=card2, card_holder=cardholder2)
-        factories.CardTransactionFactory(volume=100, price=23.80, card=card2, card_holder=cardholder2)
+        transaction1 = factories.CardTransactionFactory(volume=10, price=22, card=card1, card_holder=cardholder1)
+        transaction2 = factories.CardTransactionFactory(volume=10, price=23.80, card=card2, card_holder=cardholder2)
+        transaction3 = factories.CardTransactionFactory(volume=100, price=23.80, card=card2, card_holder=cardholder2)
 
         transactions = utils.get_card_transactions(company, start_period=period[0], end_period=period[1])
 
-        self.assertEqual(1, 2)
+        self.assertEqual(transactions[0], (card1.number, [transaction1], {'amount': 10.00}, {'total': 220.00}))
 

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.encoding import force_text
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, DateWidget
 from petrol_server.app.petrol import models
@@ -21,12 +20,20 @@ class PetrolStationWidget(ForeignKeyWidget):
             return models.PetrolStation.objects.create(address=value)
 
 
+class CardWidget(ForeignKeyWidget):
+    def clean(self, value):
+        if type(value) == unicode:
+            return super(CardWidget, self).clean(value)
+        else:
+            return super(CardWidget, self).clean(unicode(int(value)))
+
+
 class TransactionResource(resources.ModelResource):
 
     card = fields.Field(
         column_name=u'карта',
         attribute="card",
-        widget=ForeignKeyWidget(model=models.Card, field='number'),
+        widget=CardWidget(model=models.Card, field='number'),
     )
 
     petrol_station = fields.Field(
@@ -53,8 +60,6 @@ class TransactionResource(resources.ModelResource):
         column_name=u'цена без скидки',
         attribute="price"
     )
-    #card_holder = fields.Field()
-
 
     class Meta:
 
@@ -69,5 +74,4 @@ class TransactionResource(resources.ModelResource):
         instance.card_holder = models.Cardholder.objects.filter(card=instance.card).latest('date')
         if instance.volume <= 0:
             instance.is_no_need_attention=False
-
 

@@ -20,7 +20,7 @@ class Company(models.Model):
 
 
 class Card(models.Model):
-    number = models.DecimalField(decimal_places=0, max_digits=20)
+    number = models.CharField(max_length=15)
 
     def __unicode__(self):
         return unicode(self.number)

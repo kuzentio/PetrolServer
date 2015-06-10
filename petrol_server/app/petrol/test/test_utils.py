@@ -34,3 +34,7 @@ class TestTransactions(TestCase):
 
         self.assertEqual(transactions[0], (card1.number, [transaction1], {'amount': 10.00}, {'total': 220.00}))
 
+
+
+
+

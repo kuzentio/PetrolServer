@@ -32,7 +32,22 @@ class TestTransactions(TestCase):
 
         transactions = utils.get_card_transactions(company, start_period=period[0], end_period=period[1])
 
-        self.assertEqual(transactions[0], (card1.number, [transaction1], {'amount': 10.00}, {'total': 220.00}))
+        self.assertEqual(len(transactions), 2)
+
+        number, trans, amount, total = transactions[0]
+
+        self.assertEqual(number, card1.number)
+        self.assertEqual(trans[0], transaction1)
+        self.assertEqual(amount, {'amount': 10.00})
+        self.assertEqual(total, {'total': 220.00})
+
+        number, trans, amount, total = transactions[1]
+
+        self.assertEqual(number, card2.number)
+        self.assertEqual(trans[0], transaction2)
+        self.assertEqual(trans[1], transaction3)
+        self.assertEqual(amount, {'amount': 110.00})
+        self.assertEqual(total, {'total': 238+2380})
 
 
 

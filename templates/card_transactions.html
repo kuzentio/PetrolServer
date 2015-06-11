@@ -3,8 +3,21 @@
 {% block title %}PetrolServer{% endblock %}
 
 {% block balance %}
-    <p>Кабинет компании {{ company.title }}</p>
-    <span>Ваш баланс: <a href="/balance/{{ company.id }}">{{ balance|floatformat:2 }}</a></span>
+    <div class="row">
+        <div class="col-md-8">
+            <p>Кабинет компании {{ company.title }}</p>
+            <span>Ваш баланс: <a href="/balance/{{ company.id }}">{{ balance|floatformat:2 }}</a></span>
+        </div>
+        <div class="col-md-4">
+            <div id="brent" style="background: #333333; width:186px; height:61px; border: 1x solid #ccc; color:#84057A; text-decoration:none; text-align:left; top; overflow: hidden; font-style:normal; font-variant:normal; font-weight:normal; font-size:9px; font-family:Verdana, sans-serif;">
+                <a href="http://www.forexpf.ru/" title="Цены на нефть" target="_blank" style="line-height:14px;color: #FF6600;text-decoration:none;padding-left: 50px;">Oil Price</a>
+                <br>
+                <a href="http://www.forexpf.ru/chart/brent/" title="Brent" target="_blank" style="line-height:15px;color: #CCCCCC;text-decoration:none;padding-left: 33px;">Brent</a>
+                <a href="http://www.forexpf.ru/chart/lightsweet/" title="Light Sweet" target="_blank" style="line-height:15px;color:#ccc;text-decoration:none;padding-left: 63px;">Light</a>
+            </div>
+        </div>
+        <script src="http://www.forexpf.ru/_informer_/brent_.php"></script>
+    </div>
 {% endblock %}
 
 

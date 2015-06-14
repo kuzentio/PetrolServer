@@ -23,15 +23,10 @@ def main(request):
         if form.is_valid():
             start_period = datetime.strptime(form['start_period'].value(), '%d.%m.%Y')
             end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
-            #TODO: rebuild form!!!
-            # transactions = utils.get_transactions(company, start_period, end_period)
             card_transactions = utils.get_card_transactions(company, start_period, end_period)
-            # import ipdb; ipdb.set_trace()
-
             context = {
-                    # 'transactions': transactions,
                     'card_transactions': card_transactions,
-                    'form': PeriodForm,
+                    'form': form,
                     'company': company,
                     'balance': balance,
                     }

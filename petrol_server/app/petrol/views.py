@@ -59,11 +59,11 @@ def balance(request, company_id):
     return render_to_response('payments.html', context)
 
 
-@login_required(login_url='/accounts/login/')
-def discounts(request):
-    form =  forms.DiscountForm()
-
-    return render_to_response('')
+# @login_required(login_url='/accounts/login/')
+# def discounts(request):
+#     form =  forms.DiscountForm()
+#
+#     return render_to_response('')
 
 
 @login_required(login_url='accounts/login/')

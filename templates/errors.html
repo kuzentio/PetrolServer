@@ -1,18 +1,10 @@
 {% extends 'base.html' %}
 
 {% block title %}PetrolServer{% endblock %}
-{% block errors %}
+{% block content %}
     {% if error %}
         {% for e in error %}
             <p> Ошибка: {{ e }} </p>
         {% endfor %}
     {% endif %}
-{% endblock %}
-
-
-{% block logout %}
-    <br/>
-    <form method="GET" action="/logout/">
-        <input type="submit" value="Выход">
-    </form>
 {% endblock %}

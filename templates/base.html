@@ -20,14 +20,17 @@
     </script>
     <div class="container">
         {% block content %}{% endblock %}
-        {% block errors %}{% endblock %}
-        {% block payments %}{% endblock %}
-        {% block balance %}{% endblock %}
-        {% block date_form %}{% endblock %}
-        {% block list_trsnsactions %}{% endblock %}
+{#        {% block errors %}{% endblock %}#}
+{#        {% block payments %}{% endblock %}#}
+{#        {% block balance %}{% endblock %}#}
+{#        {% block date_form %}{% endblock %}#}
+{#        {% block list_trsnsactions %}{% endblock %}#}
 
-        {% block logout %}{% endblock %}
-        {% block success_messages %}{% endblock %}
+{#        {% block logout %}{% endblock %}#}
+{#        {% block success_messages %}{% endblock %}#}
+        <form method="GET" action="/logout/">
+            <input class="btn btn-default" type="submit" value="Выход">
+        </form>
     </div>
 
 </body>

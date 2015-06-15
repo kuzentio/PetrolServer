@@ -2,7 +2,7 @@
 
 {% block title %}PetrolServer{% endblock %}
 
-{% block balance %}
+{% block content %}
     <div class="row">
         <div class="col-md-8">
             <p>Кабинет компании {{ company.title }}</p>
@@ -18,20 +18,13 @@
         </div>
         <script src="http://www.forexpf.ru/_informer_/brent_.php"></script>
     </div>
-{% endblock %}
 
-
-{% block date_form %}
     <p> Выбрать период: </p>
     <form action="" method="GET">
         с:{{ form.start_period }}
         до:{{ form.end_period }}
         <input type="submit" value="Показать">
     </form>
-{% endblock %}
-
-
-{% block list_trsnsactions %}
 
     <table class="table">
         {% for card_transaction in card_transactions %}
@@ -67,10 +60,5 @@
         </tbody>
         {% endfor %}
     </table>
-{% endblock %}
 
-{% block logout %}
-    <form method="GET" action="/logout/">
-        <input class="btn btn-default" type="submit" value="Выход">
-    </form>
 {% endblock %}

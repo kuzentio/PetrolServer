@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block payments %}
+{% block content %}
     <table class="table">
         <thead>
             <tr>
@@ -25,11 +25,3 @@
     </form>
 
 {% endblock %}
-
-
-{% block logout %}
-    <form method="GET" action="/logout/">
-        <input class="btn btn-default" type="submit" value="Выход">
-    </form>
-{% endblock %}
-

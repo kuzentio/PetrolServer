@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
-from petrol_server.app.petrol.forms import PeriodForm
+from petrol_server.app.petrol import forms
 from petrol_server.app.petrol import utils
 from datetime import datetime
 from petrol_server.app.petrol.utils import staff_required
@@ -19,7 +19,7 @@ def main(request):
     balance = utils.get_balance(company)
 
     if request.method == 'GET':
-        form = PeriodForm(request.GET)
+        form = forms.PeriodForm(request.GET)
         if form.is_valid():
             start_period = datetime.strptime(form['start_period'].value(), '%d.%m.%Y')
             end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
@@ -33,7 +33,7 @@ def main(request):
 
             return render_to_response('card_transactions.html', context)
     context = {
-        'form': PeriodForm,
+        'form': forms.PeriodForm,
         'company': company,
         'balance': balance
         }
@@ -57,6 +57,13 @@ def balance(request, company_id):
     context = {'payments': payments}
 
     return render_to_response('payments.html', context)
+
+
+@login_required(login_url='/accounts/login/')
+def discounts(request):
+    form =  forms.DiscountForm()
+
+    return render_to_response('')
 
 
 @login_required(login_url='accounts/login/')

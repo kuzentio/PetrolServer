@@ -66,3 +66,11 @@ class Payment(models.Model):
     def __unicode__(self):
         return u'%s - %s' % (self.amount, self.company)
 
+
+class Discount(models.Model):
+    company = models.ForeignKey(Company)
+    discount = models.DecimalField(max_digits=2, decimal_places=2)
+    date_from = models.DateField()
+    date_to = models.DateField()
+
+

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 from django.contrib.auth import models as auth_models
 
@@ -68,9 +69,16 @@ class Payment(models.Model):
 
 
 class Discount(models.Model):
+    class Meta:
+        verbose_name = 'Скидка'
+        verbose_name_plural = 'Скидки'
+
     company = models.ForeignKey(Company)
-    discount = models.DecimalField(max_digits=2, decimal_places=2)
+    discount = models.DecimalField(max_digits=4, decimal_places=2)
     date_from = models.DateField()
     date_to = models.DateField()
+
+    def __unicode__(self):
+        return u'%s - %s (%s - %s)' % (self.company, self.discount, self.date_from, self.date_to)
 
 

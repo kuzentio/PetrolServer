@@ -4,6 +4,10 @@ from django.contrib.auth import models as auth_models
 
 
 class User(models.Model):
+    class Meta:
+        verbose_name = 'Клиент'
+        verbose_name_plural = 'Клиенты'
+
     user = models.OneToOneField(auth_models.User)
     sms_telephone = models.CharField(max_length=13, blank=True)
     fax_telephone = models.CharField(max_length=13, blank=True)
@@ -13,6 +17,10 @@ class User(models.Model):
 
 
 class Company(models.Model):
+    class Meta:
+        verbose_name = 'Компания'
+        verbose_name_plural = 'Компании'
+
     title = models.CharField(max_length=100)
     user = models.ForeignKey(User)
 
@@ -21,6 +29,10 @@ class Company(models.Model):
 
 
 class Card(models.Model):
+    class Meta:
+        verbose_name = 'Карта'
+        verbose_name_plural = 'Карты'
+
     number = models.CharField(max_length=15)
 
     def __unicode__(self):
@@ -28,6 +40,9 @@ class Card(models.Model):
 
 
 class PetrolStation(models.Model):
+    class Meta:
+        verbose_name = 'АЗС'
+        verbose_name_plural = 'АЗС'
     address = models.CharField(max_length=200)
 
     def __unicode__(self):
@@ -35,6 +50,10 @@ class PetrolStation(models.Model):
 
 
 class Cardholder(models.Model):
+    class Meta:
+        verbose_name = 'Держатель'
+        verbose_name_plural = 'Держатели'
+
     card = models.ForeignKey(Card)
     company = models.ForeignKey(Company)
     date = models.DateTimeField(auto_now_add=True)
@@ -44,6 +63,10 @@ class Cardholder(models.Model):
 
 
 class CardTransaction(models.Model):
+    class Meta:
+        verbose_name = 'Транзакция'
+        verbose_name_plural = 'Транзакции'
+
     made_at = models.DateField()
 
     card = models.ForeignKey(Card)
@@ -60,6 +83,10 @@ class CardTransaction(models.Model):
 
 
 class Payment(models.Model):
+    class Meta:
+        verbose_name = 'Платежи'
+        verbose_name_plural = 'Платежи'
+
     company = models.ForeignKey(Company)
     amount = models.DecimalField(max_digits=20, decimal_places=2)
     date = models.DateTimeField(editable=True)

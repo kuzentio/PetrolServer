@@ -51,9 +51,6 @@ class DiscountInLine(admin.TabularInline):
 class CompanyAdmin(admin.ModelAdmin):
     inlines = (DiscountInLine, )
 
-    def get_inline_instances(self, request, obj=None):
-        return [inline(self.model, self.admin_site) for inline in self.inlines]
-
 
 admin.site.register(models.User)
 admin.site.register(models.Company, CompanyAdmin)

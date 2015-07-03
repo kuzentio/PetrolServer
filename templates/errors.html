@@ -7,4 +7,7 @@
             <p> Ошибка: {{ e }} </p>
         {% endfor %}
     {% endif %}
+    <form method="GET" action="/logout/">
+        <input class="btn btn-default" type="submit" value="Выход">
+    </form>
 {% endblock %}

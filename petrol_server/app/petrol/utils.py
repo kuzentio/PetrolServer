@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,6 +52,7 @@ def get_card_transactions(company, start_period=None, end_period=None):
             ).annotate(
                 amount=Sum('price', field='volume * price')
             ).order_by('made_at')
+    discounts = models.Discount.objects.filter(company=company)
 
     seen = set()
     cards = [transaction.card for transaction in transactions if transaction.card not in seen and not seen.add(transaction.card)]
@@ -58,7 +60,30 @@ def get_card_transactions(company, start_period=None, end_period=None):
     for card in cards:
         amount_litres = transactions.filter(card=card).aggregate(amount=Sum('volume', field='volume'))
         amount_money = transactions.filter(card=card).aggregate(total=Sum('amount'))
-        transactions_data.append(((card.number, ) + (transactions.filter(card=card),) + (amount_litres, ) + (amount_money,)))
+        card_transactions = [transaction for transaction in transactions if transaction.card == card]
+
+        for card_transaction in card_transactions:
+            for discount in discounts:
+                if (card_transaction.made_at >= discount.date_from) and (card_transaction.made_at <= discount.date_to):
+                    card_transaction.discount = discount.discount
+                    card_transaction.discount_price = card_transaction.price - discount.discount
+                else:
+                    card_transaction.discount = 0.00
+                    card_transaction.discount_price = card_transaction.price
+            card_transaction.amount_discount_money = card_transaction.volume * card_transaction.discount_price
+
+        transactions_data.append(
+            (
+                (card.number, ) + (
+                    card_transactions,
+                ) + (
+                    amount_litres,
+                ) + (
+                    amount_money,
+                )
+            )
+        )
+
     return transactions_data
 
 

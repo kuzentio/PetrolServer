@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.admin.options import InlineModelAdmin
+from django.core.exceptions import ObjectDoesNotExist
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from petrol_server.app.petrol import models
@@ -42,7 +43,11 @@ class DiscountInLine(admin.TabularInline):
 
     def get_queryset(self, request):
         queryset = super(InlineModelAdmin, self).get_queryset(request)
-        obj = queryset.latest('id')
+        try:
+            obj = queryset.latest('id')
+        except ObjectDoesNotExist:
+            return queryset
+
         if not self.has_change_permission(request):
             queryset = queryset.none()
         return queryset.filter(id=obj.id)

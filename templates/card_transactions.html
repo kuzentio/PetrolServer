@@ -35,10 +35,14 @@
             <tr>
                 <th>Дата</th>
                 <th>Адрес АЗС</th>
-                <th>Топливо</th>
+                <th>Услуга</th>
                 <th>Количество</th>
-                <th>Цена</th>
-                <th>Сумма</th>
+                <th>Цена со скидкой</th>
+                <th>Стоимость на ТО</th>
+                <th>Скидка</th>
+                <th>Стоимость со скидкой</th>
+
+{#                <th>Сумма</th>#}
             </tr>
 
             {% for transaction in card_transaction.1 %}
@@ -47,8 +51,10 @@
                 <td>{{ transaction.petrol_station }}</td>
                 <td>{{ transaction.fuel }}</td>
                 <td>{{ transaction.volume }}</td>
-                <td>{{ transaction.price }}</td>
+                <td>{{ transaction.discount_price }}</td>
                 <td>{{ transaction.amount|floatformat:2 }}</td>
+                <td>{{ transaction.discount }}</td>
+                <td>{{ transaction.amount_discount_money|floatformat:2 }}</td>
             </tr>
             {% endfor %}
             <tr>
@@ -61,4 +67,7 @@
         {% endfor %}
     </table>
 
+    <form method="GET" action="/logout/">
+        <input class="btn btn-default" type="submit" value="Выход">
+    </form>
 {% endblock %}

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
+from django.contrib.admin.options import InlineModelAdmin
+from django.core.exceptions import ObjectDoesNotExist
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from petrol_server.app.petrol import models
 from petrol_server.app.petrol.resources import TransactionResource
-
-
 
 
 class CardTransactionsAdmin(ImportExportModelAdmin):
@@ -37,11 +37,31 @@ class CardTransactionsAdmin(ImportExportModelAdmin):
     make_not_approved.short_description = u'Не проводить эти транзакции'
 
 
+class DiscountInLine(admin.TabularInline):
+    model = models.Discount
+    extra = 1
+
+    def get_queryset(self, request):
+        queryset = super(InlineModelAdmin, self).get_queryset(request)
+        try:
+            obj = queryset.latest('id')
+        except ObjectDoesNotExist:
+            return queryset
+
+        if not self.has_change_permission(request):
+            queryset = queryset.none()
+        return queryset.filter(id=obj.id)
+
+
+class CompanyAdmin(admin.ModelAdmin):
+    inlines = (DiscountInLine, )
+
 
 admin.site.register(models.User)
-admin.site.register(models.Company)
+admin.site.register(models.Company, CompanyAdmin)
 admin.site.register(models.Card)
 admin.site.register(models.CardTransaction, CardTransactionsAdmin)
 admin.site.register(models.Cardholder)
 admin.site.register(models.Payment)
+admin.site.register(models.Discount)
 

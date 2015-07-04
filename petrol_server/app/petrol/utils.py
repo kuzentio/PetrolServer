@@ -63,14 +63,19 @@ def get_card_transactions(company, start_period=None, end_period=None):
         card_transactions = [transaction for transaction in transactions if transaction.card == card]
 
         for card_transaction in card_transactions:
-            for discount in discounts:
-                if (card_transaction.made_at >= discount.date_from) and (card_transaction.made_at <= discount.date_to):
-                    card_transaction.discount = discount.discount
-                    card_transaction.discount_price = card_transaction.price - discount.discount
-                else:
-                    card_transaction.discount = 0.00
-                    card_transaction.discount_price = card_transaction.price
-            card_transaction.amount_discount_money = card_transaction.volume * card_transaction.discount_price
+            if discounts:
+                for discount in discounts:
+                    if (card_transaction.made_at >= discount.date_from) and (card_transaction.made_at <= discount.date_to):
+                        card_transaction.discount = discount.discount
+                        card_transaction.discount_price = card_transaction.price - discount.discount
+                    else:
+                        card_transaction.discount = 0.00
+                        card_transaction.discount_price = card_transaction.price
+                card_transaction.amount_discount_money = card_transaction.volume * card_transaction.discount_price
+            else:
+                card_transaction.discount = 0.00
+                card_transaction.discount_price = card_transaction.price
+                card_transaction.amount_discount_money = card_transaction.volume * card_transaction.price
 
         transactions_data.append(
             (

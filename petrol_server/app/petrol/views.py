@@ -59,7 +59,6 @@ def balance(request, company_id):
     return render_to_response('payments.html', context)
 
 
-@login_required(login_url='accounts/login/')
 def logout_view(request):
     logout(request)
     return render_to_response('success_logout.html')

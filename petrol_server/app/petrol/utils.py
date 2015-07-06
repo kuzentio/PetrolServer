@@ -33,7 +33,7 @@ def staff_required(redirect_url):
 #@user_passes_test(lambda user: user.is_staff)
 #def view(request):
 #    pass
-def get_transactions(company, start_period=None, end_period=None):
+def get_transactions(company, start_period='2010-01-01', end_period=None):
 
     return models.CardTransaction.objects.filter(
                 card_holder__company=company.id).filter(
@@ -43,7 +43,7 @@ def get_transactions(company, start_period=None, end_period=None):
             ).order_by('made_at')
 
 
-def get_card_transactions(company, start_period=None, end_period=None):
+def get_card_transactions(company, start_period='2011-01-01', end_period=None):
     transactions_data = []
 
     transactions = models.CardTransaction.objects.filter(
@@ -52,7 +52,6 @@ def get_card_transactions(company, start_period=None, end_period=None):
             ).annotate(
                 amount=Sum('price', field='volume * price')
             ).order_by('made_at')
-    discounts = models.Discount.objects.filter(company=company)
 
     seen = set()
     cards = [transaction.card for transaction in transactions if transaction.card not in seen and not seen.add(transaction.card)]
@@ -61,21 +60,11 @@ def get_card_transactions(company, start_period=None, end_period=None):
         amount_litres = transactions.filter(card=card).aggregate(amount=Sum('volume', field='volume'))
         amount_money = transactions.filter(card=card).aggregate(total=Sum('amount'))
         card_transactions = [transaction for transaction in transactions if transaction.card == card]
+        card_transactions = get_discount_transactions(card_transactions)
 
         for card_transaction in card_transactions:
-            if discounts:
-                for discount in discounts:
-                    if (card_transaction.made_at >= discount.date_from) and (card_transaction.made_at <= discount.date_to):
-                        card_transaction.discount = discount.discount
-                        card_transaction.discount_price = card_transaction.price - discount.discount
-                    else:
-                        card_transaction.discount = 0.00
-                        card_transaction.discount_price = card_transaction.price
-                card_transaction.amount_discount_money = card_transaction.volume * card_transaction.discount_price
-            else:
-                card_transaction.discount = 0.00
-                card_transaction.discount_price = card_transaction.price
-                card_transaction.amount_discount_money = card_transaction.volume * card_transaction.price
+            card_transaction.discount_price = card_transaction.price - card_transaction.discount
+            card_transaction.amount_discount_money = card_transaction.volume * card_transaction.discount_price
 
         transactions_data.append(
             (
@@ -88,16 +77,25 @@ def get_card_transactions(company, start_period=None, end_period=None):
                 )
             )
         )
-
     return transactions_data
 
 
 def get_balance(company, on_date=datetime.datetime.now()):
-    consumption = get_transactions(
-        company,
-        start_period='2011-01-01',
-        end_period=on_date).aggregate(Sum('amount'))['amount__sum']
+    transactions = get_transactions(company, end_period=on_date)
+    transactions = get_discount_transactions(transactions)
+    consumption = 0
 
+    for transaction in transactions:
+        transaction.discount_price = transaction.price - transaction.discount
+        transaction.amount_discount_money = transaction.volume * transaction.discount_price
+        consumption += transaction.amount_discount_money
+
+
+
+    # consumption = get_transactions(
+    #     company,
+    #     end_period=on_date).aggregate(Sum('amount'))['amount__sum']
+    #
     payments = models.Payment.objects.filter(
         company_id=company.id,
         date__range=['2011-01-01', on_date]
@@ -109,4 +107,18 @@ def get_balance(company, on_date=datetime.datetime.now()):
     balance = payments - consumption
     return balance
 
+
+def get_discount_transactions(transactions):
+
+    for transaction in transactions:
+        discounts = models.Discount.objects.filter(company=transaction.card_holder.company)
+        if not discounts:
+            transaction.discount = Decimal(0.00)
+        for discount in discounts:
+            if transaction.made_at >= discount.date_from and transaction.made_at <= discount.date_to:
+                transaction.discount = discount.discount
+            else:
+                transaction.discount = Decimal(0.00)
+
+    return transactions
 

@@ -79,4 +79,14 @@ class PaymentsFactory(DjangoModelFactory):
     date = '2011-01-01'
 
 
+class DiscountFactory(DjangoModelFactory):
+    class Meta:
+        model = models.Discount
+        django_get_or_create = ('company', 'discount', 'date_from', 'date_to')
+    company = factory.SubFactory(CompanyFactory)
+    discount = 0.22
+    date_from = '2011-01-01'
+    date_to = '2011-01-02'
+
+
 

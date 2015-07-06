@@ -63,11 +63,3 @@ def logout_view(request):
     logout(request)
     return render_to_response('success_logout.html')
 
-
-
-
-
-
-
-
-

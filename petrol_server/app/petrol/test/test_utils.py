@@ -124,7 +124,7 @@ class TestTransactions(TestCase):
 
         summary_data = utils.get_summary_data(transactions)
 
-        self.assertEqual(summary_data['sale'], 660)
+        self.assertEqual(summary_data['total'], 660)
         self.assertEqual(summary_data['saved_money'], Decimal('2.2000'))
         self.assertEqual(len(summary_data['fuel']), 2)
         self.assertEqual(summary_data['fuel'][u'92'], 10)

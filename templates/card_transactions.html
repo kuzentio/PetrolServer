@@ -3,7 +3,7 @@
 {% block title %}PetrolServer{% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="row" xmlns="http://www.w3.org/1999/html">
         <div class="col-md-8">
             <p>Кабинет компании {{ company.title }}</p>
             <span>Ваш баланс: <a href="/balance/{{ company.id }}">{{ balance|floatformat:2 }}</a></span>
@@ -26,6 +26,8 @@
         <input type="submit" value="Показать">
     </form>
 
+    {% include 'summary_data.html' %}
+
     <table class="table">
         {% for card_transaction in card_transactions %}
         <tbody>
@@ -41,8 +43,6 @@
                 <th>Стоимость на ТО</th>
                 <th>Скидка</th>
                 <th>Стоимость со скидкой</th>
-
-{#                <th>Сумма</th>#}
             </tr>
 
             {% for transaction in card_transaction.1 %}

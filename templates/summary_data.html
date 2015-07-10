@@ -1,0 +1,26 @@
+{% load summary_extras %}
+
+{% for element in summary_data %}
+    {% if element == 'fuel' %}
+        {% with summary_data|value_by_key:element as fuels %}
+            {% for fuel in fuels %}
+                {% with fuels|value_by_key:fuel as volume %}
+                <span><strong>{{ fuel }}</strong> - {{ volume }} л.</span><br>
+                {% endwith %}
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
+
+    {% if element == 'total' %}
+        {% with summary_data|value_by_key:element as total %}
+            <span><strong>Реализация</strong> - {{ total|floatformat:2 }} грн.</span><br>
+        {% endwith %}
+    {% endif %}
+
+    {% if element == 'saved_money' %}
+        {% with summary_data|value_by_key:element as saved_money %}
+            <span><strong>Скидка</strong> - {{ saved_money|floatformat:2 }} грн.</span><br>
+        {% endwith %}
+    {% endif %}
+{% endfor %}
+

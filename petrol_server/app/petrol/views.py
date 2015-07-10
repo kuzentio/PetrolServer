@@ -1,5 +1,5 @@
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
@@ -11,33 +11,35 @@ from petrol_server.app.petrol.utils import staff_required
 
 @login_required(login_url='accounts/login/')
 @staff_required(redirect_url='/admin/')
+# @is_company_exists()
+# @user_passes_test(login_url='')
 def main(request):
     try:
-        company = models.Company.objects.get(user__user__id=request.user.id)
+        company = models.Company.objects.get(user__user=request.user.id)
     except ObjectDoesNotExist as e:
         return render_to_response('errors.html', {'error': e})
     balance = utils.get_balance(company)
 
     if request.method == 'GET':
         form = forms.PeriodForm(request.GET)
+        context = {
+            'form': forms.PeriodForm,
+            'company': company,
+            'balance': balance
+            }
         if form.is_valid():
             start_period = datetime.strptime(form['start_period'].value(), '%d.%m.%Y')
             end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
-            card_transactions = utils.get_card_transactions(company, start_period, end_period)
+            transactions = utils.filter_transactions(company, start_period, end_period)
             context = {
-                    'card_transactions': card_transactions,
+                    'summary_data': utils.get_summary_data(transactions),
+                    'card_transactions': utils.get_card_transactions(transactions),
                     'form': form,
                     'company': company,
                     'balance': balance,
                     }
 
-            return render_to_response('card_transactions.html', context)
-    context = {
-        'form': forms.PeriodForm,
-        'company': company,
-        'balance': balance
-        }
-    return render_to_response('card_transactions.html', context)
+        return render_to_response('card_transactions.html', context)
 
 
 @login_required(login_url='accounts/login/')

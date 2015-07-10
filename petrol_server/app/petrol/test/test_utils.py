@@ -1,4 +1,4 @@
-
+from decimal import Decimal
 from django.test import TestCase
 from petrol_server.app.petrol import models
 from petrol_server.app.petrol.test import factories
@@ -36,9 +36,8 @@ class TestBalance(TestCase):
         self.assertEqual(float(balance), -458)
 
 
-
 class TestTransactions(TestCase):
-    def test_transaction(self):
+    def test_transactions(self):
         company = factories.CompanyFactory()
         card1 = factories.CardFactory(number=u'1')
         card2 = factories.CardFactory(number=u'2')
@@ -49,19 +48,18 @@ class TestTransactions(TestCase):
         transaction1 = factories.CardTransactionFactory(volume=10, price=22, card=card1, card_holder=cardholder1)
         transaction2 = factories.CardTransactionFactory(volume=10, price=23.80, card=card2, card_holder=cardholder2)
         transaction3 = factories.CardTransactionFactory(volume=100, price=23.80, card=card2, card_holder=cardholder2)
+        transactions = utils.filter_transactions(company, start_period=period[0], end_period=period[1])
 
-        transactions = utils.get_card_transactions(company, start_period=period[0], end_period=period[1])
+        card_transactions = utils.get_card_transactions(transactions)
 
-        self.assertEqual(len(transactions), 2)
-
-        number, trans, amount, total = transactions[0]
+        number, trans, amount, total = card_transactions[0]
 
         self.assertEqual(number, card1.number)
         self.assertEqual(trans[0], transaction1)
         self.assertEqual(amount, {'amount': 10.00})
         self.assertEqual(total, {'total': 220.00})
 
-        number, trans, amount, total = transactions[1]
+        number, trans, amount, total = card_transactions[1]
 
         self.assertEqual(number, card2.number)
         self.assertEqual(trans[0], transaction2)
@@ -77,7 +75,7 @@ class TestTransactions(TestCase):
         factories.CardTransactionFactory(volume=10, price=22, made_at='2011-01-01')
         factories.CardTransactionFactory(volume=10, price=23.80, made_at='2011-01-02')
         factories.CardTransactionFactory(volume=100, price=23.80, made_at='2012-01-01')
-        transactions = utils.get_transactions(company, end_period=period[1])
+        transactions = utils.filter_transactions(company, end_period=period[1])
 
         discount = factories.DiscountFactory()
         discount_transactions = utils.get_discount_transactions(transactions)
@@ -93,7 +91,7 @@ class TestTransactions(TestCase):
         factories.CardTransactionFactory(card_holder__company=company, volume=10, price=22, made_at='2011-01-01')
         factories.CardTransactionFactory(card_holder__company=company, volume=10, price=23.80, made_at='2011-01-02')
         factories.CardTransactionFactory(card_holder__company=company, volume=100, price=23.80, made_at='2012-01-01')
-        transactions = utils.get_transactions(company, end_period=period[1])
+        transactions = utils.filter_transactions(company, end_period=period[1])
 
         factories.DiscountFactory()
 
@@ -108,11 +106,32 @@ class TestTransactions(TestCase):
         period = ['2010-01-01', '2012-01-01']
         factories.CardTransactionFactory(card_holder__company=company, volume=10, price=22, made_at='2011-01-01')
 
-        transactions = utils.get_transactions(company, end_period=period[1])
+        transactions = utils.filter_transactions(company, end_period=period[1])
         discount = factories.DiscountFactory()
         discount_transactions = utils.get_discount_transactions(transactions)
 
         self.assertEqual(unicode(discount_transactions[0].discount), unicode(discount.discount))
+
+    def test_summary_data_counting(self):
+        company = factories.CompanyFactory()
+        period = ['2010-01-01', '2012-01-01']
+
+        factories.CardTransactionFactory(card_holder__company=company, volume=10, price=22, made_at='2011-01-01')
+        factories.CardTransactionFactory(card_holder__company=company, volume=10, price=22, made_at='2011-02-01', fuel=u'92')
+        factories.CardTransactionFactory(card_holder__company=company, volume=10, price=22, made_at='2011-03-01')
+        factories.DiscountFactory()
+        transactions = utils.filter_transactions(company, start_period=period[0], end_period=period[1])
+
+        summary_data = utils.get_summary_data(transactions)
+
+        self.assertEqual(summary_data['sale'], 660)
+        self.assertEqual(summary_data['saved_money'], Decimal('2.2000'))
+        self.assertEqual(len(summary_data['fuel']), 2)
+        self.assertEqual(summary_data['fuel'][u'92'], 10)
+        self.assertEqual(summary_data['fuel'][u'DT'], 20)
+
+
+
 
 
 

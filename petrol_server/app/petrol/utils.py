@@ -8,19 +8,8 @@ from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
 
 
-def company_decorator(user):
-    def decorator(func):
-        def inner(*args, **kwargs):
-            try:
-                company = models.Company.objects.get(user__user__id=user.id)
-            except ObjectDoesNotExist as e:
-                return render_to_response('errors.html', {'error': e})
-            return func(company, *args, **kwargs)
-        return inner
-    return decorator
-
-
 def staff_required(redirect_url):
+    # TODO: check user_passes_test
     def decorator(func):
         def wrapper(request, *args, **kwargs):
             if request.user.is_staff:
@@ -30,11 +19,7 @@ def staff_required(redirect_url):
     return decorator
 
 
-#@user_passes_test(lambda user: user.is_staff)
-#def view(request):
-#    pass
-def get_transactions(company, start_period='2010-01-01', end_period=None):
-
+def filter_transactions(company, start_period='2010-01-01', end_period=None):
     return models.CardTransaction.objects.filter(
                 card_holder__company=company.id).filter(
                 made_at__range=[start_period, end_period]
@@ -43,45 +28,53 @@ def get_transactions(company, start_period='2010-01-01', end_period=None):
             ).order_by('made_at')
 
 
-def get_card_transactions(company, start_period='2011-01-01', end_period=None):
+def get_card_transactions(transactions):
     transactions_data = []
 
-    transactions = models.CardTransaction.objects.filter(
-                card_holder__company=company.id).filter(
-                made_at__range=[start_period, end_period]
-            ).annotate(
-                amount=Sum('price', field='volume * price')
-            ).order_by('made_at')
-
-    seen = set()
-    cards = [transaction.card for transaction in transactions if transaction.card not in seen and not seen.add(transaction.card)]
+    cards = set([transaction.card for transaction in transactions])
 
     for card in cards:
         amount_litres = transactions.filter(card=card).aggregate(amount=Sum('volume', field='volume'))
         amount_money = transactions.filter(card=card).aggregate(total=Sum('amount'))
-        card_transactions = [transaction for transaction in transactions if transaction.card == card]
-        card_transactions = get_discount_transactions(card_transactions)
-
+        card_transactions = get_discount_transactions(
+            [transaction for transaction in transactions if transaction.card == card]
+        )
         for card_transaction in card_transactions:
             card_transaction.discount_price = card_transaction.price - card_transaction.discount
             card_transaction.amount_discount_money = card_transaction.volume * card_transaction.discount_price
 
         transactions_data.append(
             (
-                (card.number, ) + (
-                    card_transactions,
-                ) + (
-                    amount_litres,
-                ) + (
-                    amount_money,
-                )
+                card.number, card_transactions, amount_litres, amount_money
             )
         )
     return transactions_data
 
 
+def get_summary_data(transactions):
+    summary_data = {}
+    summary_data['fuel'] = {}
+    total = 0
+    saved_money = 0
+
+    card_transactions = get_discount_transactions(transactions)
+
+    for card_transaction in card_transactions:
+        total += card_transaction.amount
+        saved_money += card_transaction.discount * card_transaction.volume
+        try:
+            summary_data['fuel'][card_transaction.fuel] += card_transaction.volume
+        except KeyError:
+            summary_data['fuel'][card_transaction.fuel] = card_transaction.volume
+
+    summary_data['total'] = total
+    summary_data['saved_money'] = saved_money
+
+    return summary_data
+
+
 def get_balance(company, on_date=datetime.datetime.now()):
-    transactions = get_transactions(company, end_period=on_date)
+    transactions = filter_transactions(company, end_period=on_date)
     transactions = get_discount_transactions(transactions)
     consumption = 0
 
@@ -90,12 +83,6 @@ def get_balance(company, on_date=datetime.datetime.now()):
         transaction.amount_discount_money = transaction.volume * transaction.discount_price
         consumption += transaction.amount_discount_money
 
-
-
-    # consumption = get_transactions(
-    #     company,
-    #     end_period=on_date).aggregate(Sum('amount'))['amount__sum']
-    #
     payments = models.Payment.objects.filter(
         company_id=company.id,
         date__range=['2011-01-01', on_date]

@@ -6,13 +6,11 @@ from petrol_server.app.petrol import models
 from petrol_server.app.petrol import forms
 from petrol_server.app.petrol import utils
 from datetime import datetime
-from petrol_server.app.petrol.utils import staff_required
 
 
 @login_required(login_url='accounts/login/')
-@staff_required(redirect_url='/admin/')
+@user_passes_test(lambda user: not user.is_staff, login_url='/admin/')
 # @is_company_exists()
-# @user_passes_test(login_url='')
 def main(request):
     try:
         company = models.Company.objects.get(user__user=request.user.id)
@@ -43,7 +41,7 @@ def main(request):
 
 
 @login_required(login_url='accounts/login/')
-@staff_required(redirect_url='/admin/')
+@user_passes_test(lambda user: not user.is_staff, login_url='/admin/')
 def balance(request, company_id):
     try:
         company = models.Company.objects.get(user__user__id=request.user.id)

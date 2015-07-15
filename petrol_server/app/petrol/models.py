@@ -79,7 +79,7 @@ class CardTransaction(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='Цена')
 
     is_approved = models.BooleanField(default=False, verbose_name='Проведен')
-    is_no_need_attention = models.BooleanField(default=True, verbose_name='Обратить внимание')
+    is_no_need_attention = models.BooleanField(default=True, verbose_name='Правильная транзакция')
 
 
 class Payment(models.Model):

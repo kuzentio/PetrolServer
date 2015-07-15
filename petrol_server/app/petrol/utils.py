@@ -1,22 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
 from decimal import Decimal
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
-from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
-
-
-def staff_required(redirect_url):
-    # TODO: check user_passes_test
-    def decorator(func):
-        def wrapper(request, *args, **kwargs):
-            if request.user.is_staff:
-                return HttpResponseRedirect(redirect_url)
-            return func(request, *args, **kwargs)
-        return wrapper
-    return decorator
 
 
 def filter_transactions(company, start_period='2010-01-01', end_period=None):
@@ -96,7 +82,6 @@ def get_balance(company, on_date=datetime.datetime.now()):
 
 
 def get_discount_transactions(transactions):
-
     for transaction in transactions:
         discounts = models.Discount.objects.filter(company=transaction.card_holder.company)
         if not discounts:

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p> Введите период:</p>
+    <form action="" method="GET">
+        с:{{ form.start_period }}
+        до:{{ form.end_period }}
+        <input type="submit" value="Показать">
+    </form>
+
+{% endblock %}

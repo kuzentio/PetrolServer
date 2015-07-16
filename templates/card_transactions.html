@@ -58,9 +58,14 @@
             </tr>
             {% endfor %}
             <tr>
-                <th>Всего литров: {{ card_transaction.2.amount }}</th>
-
-                <th>Всего грн: {{ card_transaction.3.total|floatformat:2 }}</th>
+                <th>Итого:</th>
+                <th></th>
+                <th></th>
+                <th>{{ card_transaction.2|floatformat:2 }}</th>
+                <th></th>
+                <th>{{ card_transaction.3|floatformat:2 }}</th>
+                <th></th>
+                <th>{{ card_transaction.4|floatformat:2 }}</th>
             </tr>
 
         </tbody>

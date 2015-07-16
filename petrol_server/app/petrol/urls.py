@@ -6,6 +6,7 @@ from django.contrib.auth.views import login
 urlpatterns = patterns('',
     url(r'^$', views.main),
     url(r'^balance/(?P<company_id>\d+)/$', views.balance),
+    url(r'^statistic', views.statistic),
 
     (r'^accounts/login/$',  login),
     (r'^accounts/logout/$', views.logout_view),

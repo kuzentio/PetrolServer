@@ -16,28 +16,40 @@ def main(request):
         company = models.Company.objects.get(user__user=request.user.id)
     except ObjectDoesNotExist as e:
         return render_to_response('errors.html', {'error': e})
-    balance = utils.get_balance(company)
 
-    if request.method == 'GET':
-        form = forms.PeriodForm(request.GET)
+    form = forms.PeriodForm(request.GET)
+    balance = utils.get_balance(company, on_date=datetime.now())
+    context = {
+        'form': forms.PeriodForm,
+        'company': company,
+        'balance': balance,
+        }
+    if form.is_valid():
+        start_period = datetime.strptime(form['start_period'].value(), '%d.%m.%Y')
+        end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
+        transactions = utils.build_discount_transactions(company, start_period, end_period)
         context = {
-            'form': forms.PeriodForm,
-            'company': company,
-            'balance': balance
-            }
-        if form.is_valid():
-            start_period = datetime.strptime(form['start_period'].value(), '%d.%m.%Y')
-            end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
-            transactions = utils.filter_transactions(company, start_period, end_period)
-            context = {
-                    'summary_data': utils.get_summary_data(transactions),
-                    'card_transactions': utils.get_card_transactions(transactions),
-                    'form': form,
-                    'company': company,
-                    'balance': balance,
-                    }
+                'summary_data': utils.get_summary_data(transactions),
+                'card_transactions': utils.get_card_transactions(transactions),
+                'form': form,
+                'company': company,
+                'balance': balance,
+                }
 
-        return render_to_response('card_transactions.html', context)
+    return render_to_response('card_transactions.html', context)
+
+# @login_required(login_url='accounts/login/')
+@user_passes_test(lambda user: user.is_staff, login_url='/admin/') #TODO:create '/errors/' url for this
+def statistic(request):
+    form = forms.PeriodForm(request.GET)
+    realization = {}
+    context = {
+        'form': form,
+        }
+    if form.is_valid():
+        transactions = models.CardTransaction.objects.all()
+
+    return render_to_response('statistic.html', context)
 
 
 @login_required(login_url='accounts/login/')

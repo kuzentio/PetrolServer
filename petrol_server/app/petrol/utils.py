@@ -1,40 +1,58 @@
 # -*- coding: utf-8 -*-
 import datetime
 from decimal import Decimal
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from petrol_server.app.petrol import models
 
 
-def filter_transactions(company, start_period='2010-01-01', end_period=None):
-    return models.CardTransaction.objects.filter(
+def build_discount_transactions(company, start_period='2010-01-01', end_period=None):
+    transactions = models.CardTransaction.objects.select_related().filter(
                 card_holder__company=company.id).filter(
                 made_at__range=[start_period, end_period]
             ).annotate(
                 amount=Sum('price', field='volume * price')
             ).order_by('made_at')
 
+    discounts = models.Discount.objects.select_related().filter(company=company).filter(
+                Q(date_from__range=[start_period, end_period]) |
+                Q(date_to__range=[start_period, end_period])
+    )
+
+    if discounts:
+        for transaction in transactions:
+            for discount in discounts:
+                if transaction.made_at >= discount.date_from and transaction.made_at <= discount.date_to:
+                    transaction.discount = discount.discount
+                    transaction.discount_price = transaction.price - transaction.discount
+                    transaction.amount_discount_money = transaction.volume * transaction.discount_price
+                else:
+                    transaction.discount = Decimal(0.00)
+                    transaction.discount_price = Decimal(0.00)
+                    transaction.amount_discount_money = transaction.amount
+    else:
+        for transaction in transactions:
+            transaction.discount = Decimal(0.00)
+            transaction.discount_price = Decimal(0.00)
+            transaction.amount_discount_money = transaction.amount
+
+    return transactions
+
 
 def get_card_transactions(transactions):
-    transactions_data = []
+    card_transactions_data = []
 
     cards = set([transaction.card for transaction in transactions])
-
     for card in cards:
-        amount_litres = transactions.filter(card=card).aggregate(amount=Sum('volume', field='volume'))
-        amount_money = transactions.filter(card=card).aggregate(total=Sum('amount'))
-        card_transactions = get_discount_transactions(
-            [transaction for transaction in transactions if transaction.card == card]
-        )
-        for card_transaction in card_transactions:
-            card_transaction.discount_price = card_transaction.price - card_transaction.discount
-            card_transaction.amount_discount_money = card_transaction.volume * card_transaction.discount_price
-
-        transactions_data.append(
+        card_transactions = [transaction for transaction in transactions if card == transaction.card]
+        card_transactions_data.append(
             (
-                card.number, card_transactions, amount_litres, amount_money
+                card, card_transactions,
+                sum([card_transaction.volume for card_transaction in card_transactions]),
+                sum([card_transaction.amount for card_transaction in card_transactions]),
+                sum([card_transaction.amount_discount_money for card_transaction in card_transactions])
             )
         )
-    return transactions_data
+    return card_transactions_data
 
 
 def get_summary_data(transactions):
@@ -43,9 +61,7 @@ def get_summary_data(transactions):
     total = 0
     saved_money = 0
 
-    card_transactions = get_discount_transactions(transactions)
-
-    for card_transaction in card_transactions:
+    for card_transaction in transactions:
         total += card_transaction.amount
         saved_money += card_transaction.discount * card_transaction.volume
         try:
@@ -60,14 +76,12 @@ def get_summary_data(transactions):
 
 
 def get_balance(company, on_date=datetime.datetime.now()):
-    transactions = filter_transactions(company, end_period=on_date)
-    transactions = get_discount_transactions(transactions)
+    transactions = build_discount_transactions(company, end_period=on_date)
     consumption = 0
 
     for transaction in transactions:
-        transaction.discount_price = transaction.price - transaction.discount
-        transaction.amount_discount_money = transaction.volume * transaction.discount_price
         consumption += transaction.amount_discount_money
+
 
     payments = models.Payment.objects.filter(
         company_id=company.id,
@@ -79,18 +93,3 @@ def get_balance(company, on_date=datetime.datetime.now()):
 
     balance = payments - consumption
     return balance
-
-
-def get_discount_transactions(transactions):
-    for transaction in transactions:
-        discounts = models.Discount.objects.filter(company=transaction.card_holder.company)
-        if not discounts:
-            transaction.discount = Decimal(0.00)
-        for discount in discounts:
-            if transaction.made_at >= discount.date_from and transaction.made_at <= discount.date_to:
-                transaction.discount = discount.discount
-            else:
-                transaction.discount = Decimal(0.00)
-
-    return transactions
-

@@ -8,4 +8,23 @@
         <input type="submit" value="Показать">
     </form>
 
+    {% if companies_data %}
+        <table class="table">
+            <tbody>
+            <tr>
+                <th>Компания</th>
+                <th>Реализация (л.)</th>
+                <th>Реализация (грн.)</th>
+            </tr>
+        {% for company_data in companies_data %}
+            <tr>
+                <td>{{ company_data.0}}</td>
+                <td>{{ company_data.1|floatformat:2}}</td>
+                <td>{{ company_data.2|floatformat:2}}</td>
+            </tr>
+        {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
 {% endblock %}

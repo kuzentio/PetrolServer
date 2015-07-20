@@ -5,7 +5,7 @@
         {% with summary_data|value_by_key:element as fuels %}
             {% for fuel in fuels %}
                 {% with fuels|value_by_key:fuel as volume %}
-                <span><strong>{{ fuel }}</strong> - {{ volume }} л.</span><br>
+                    <span><strong>{{ fuel }}</strong> - {{ volume }} л.</span><br>
                 {% endwith %}
             {% endfor %}
         {% endwith %}

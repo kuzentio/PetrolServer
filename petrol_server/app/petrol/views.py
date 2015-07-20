@@ -1,6 +1,7 @@
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Sum
 from django.shortcuts import render_to_response
 from petrol_server.app.petrol import models
 from petrol_server.app.petrol import forms
@@ -38,16 +39,30 @@ def main(request):
 
     return render_to_response('card_transactions.html', context)
 
-# @login_required(login_url='accounts/login/')
-@user_passes_test(lambda user: user.is_staff, login_url='/admin/') #TODO:create '/errors/' url for this
+@login_required(login_url='accounts/login/')
+@user_passes_test(lambda user: user.is_staff, login_url='/admin/')
 def statistic(request):
     form = forms.PeriodForm(request.GET)
-    realization = {}
+
+    if not form.is_valid():
+        return render_to_response('statistic.html', {'form': form})
+
+    start_period = datetime.strptime(form['start_period'].value(), '%d.%m.%Y')
+    end_period = datetime.strptime(form['end_period'].value(), '%d.%m.%Y')
+
+    companies_data = models.CardTransaction.objects.filter(
+        made_at__range=[start_period, end_period],
+    ).values_list(
+        'card_holder__company__title',
+    ).annotate(
+        amount=Sum('price', field='volume * price'),
+        volume=Sum('volume'),
+    )
+
     context = {
         'form': form,
-        }
-    if form.is_valid():
-        transactions = models.CardTransaction.objects.all()
+        'companies_data': companies_data,
+    }
 
     return render_to_response('statistic.html', context)
 

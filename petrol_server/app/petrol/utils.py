@@ -5,6 +5,16 @@ from django.db.models import Sum, Q
 from petrol_server.app.petrol import models
 
 
+class Statistic_obj(object):
+    def __init__(self, company, realization, amount, amount_discount):
+        self.company = company.title
+        self.realizations = realization
+        self.amount = amount
+        self.amount_discount = amount_discount
+
+    def __repr__(self):
+        return self.company
+
 def build_discount_transactions(company, start_period='2010-01-01', end_period=None):
     transactions = models.CardTransaction.objects.select_related().filter(
                 card_holder__company=company.id).filter(

@@ -2,6 +2,8 @@
 
 {% block title %}PetrolServer{% endblock %}
 
+{% load summary_extras %}
+
 {% block content %}
     <div class="row" xmlns="http://www.w3.org/1999/html">
         <div class="col-md-8">
@@ -51,10 +53,10 @@
                 <td>{{ transaction.petrol_station }}</td>
                 <td>{{ transaction.fuel }}</td>
                 <td>{{ transaction.volume }}</td>
-                <td>{{ transaction.discount_price }}</td>
+                <td>{{ transaction.price|minus:transaction.discount|floatformat:2 }}</td>
                 <td>{{ transaction.amount|floatformat:2 }}</td>
-                <td>{{ transaction.discount }}</td>
-                <td>{{ transaction.amount_discount_money|floatformat:2 }}</td>
+                <td>{{ transaction.volume|multipl:transaction.discount|floatformat:2 }}</td>
+                <td>{{ transaction.price|minus:transaction.discount|multipl:transaction.volume|floatformat:2 }}</td>
             </tr>
             {% endfor %}
             <tr>
@@ -64,8 +66,8 @@
                 <th>{{ card_transaction.2|floatformat:2 }}</th>
                 <th></th>
                 <th>{{ card_transaction.3|floatformat:2 }}</th>
-                <th></th>
                 <th>{{ card_transaction.4|floatformat:2 }}</th>
+                <th>{{ card_transaction.5|floatformat:2 }}</th>
             </tr>
 
         </tbody>

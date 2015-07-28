@@ -46,14 +46,13 @@ class TestTransactions(TestCase):
         self.cardholder_02 = factories.CardHolderFactory(company=self.company_bar, card=self.card_02)
         factories.CardTransactionFactory(card=self.card_01, card_holder=self.cardholder_01)
         factories.CardTransactionFactory(card=self.card_02, card_holder=self.cardholder_02, volume=11, price=20, made_at='2011-01-02')
-        factories.CardTransactionFactory(card=self.card_02, card_holder=self.cardholder_02, volume=11, price=22, made_at='2011-01-02')
-        factories.CardTransactionFactory(card=self.card_02, card_holder=self.cardholder_02, volume=11, price=22, made_at='2011-01-03')
+        factories.CardTransactionFactory(card=self.card_02, card_holder=self.cardholder_02, volume=15, price=22, made_at='2011-01-02')
+        factories.CardTransactionFactory(card=self.card_02, card_holder=self.cardholder_02, volume=19.99, price=22, made_at='2011-01-03')
         factories.DiscountFactory(company=self.company_bar, discount=0.30, date_from='2011-01-01', date_to='2011-01-02')
         factories.DiscountFactory(company=self.company_foo, discount=0.15, date_from='2011-01-01', date_to='2011-01-02')
 
-    def test_test(self):
-        transactions = utils.build_discount_transactions(self.company_bar, start_period='2011-01-01', end_period='2011-01-03')
+    def test_balance(self):
+        balance = utils.get_balance(company=self.company_bar, on_date='2011-01-02')
 
         self.assertFalse(1, False)
-
 

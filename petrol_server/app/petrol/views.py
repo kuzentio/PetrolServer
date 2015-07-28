@@ -11,7 +11,6 @@ from datetime import datetime
 
 @login_required(login_url='accounts/login/')
 @user_passes_test(lambda user: not user.is_staff, login_url='/admin/')
-# @is_company_exists()
 def main(request):
     try:
         company = models.Company.objects.get(user__user=request.user.id)
@@ -58,6 +57,8 @@ def statistic(request):
         amount=Sum('price', field='volume * price'),
         volume=Sum('volume'),
     )
+
+    companies_data = [(utils.get_balance(models.Company.objects.get(title=company_data[0]), start_period), utils.get_balance(models.Company.objects.get(title=company_data[0]), end_period),) + company_data for company_data in companies_data]
 
     context = {
         'form': form,

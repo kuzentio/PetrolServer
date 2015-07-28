@@ -70,9 +70,23 @@ def get_summary_data(transactions):
     return summary_data
 
 
-def get_balance(company, on_date=datetime.datetime.now()):
+def get_balance(company, on_date=None):
     transactions = build_discount_transactions(company, end_period=on_date)
     consumption = 0
+
+    t_transactions = models.CardTransaction.objects.filter(
+        card_holder__company=company,
+        made_at__range = ['2010-01-01', on_date]).annotate(
+        amount=Sum('price', field='volume * price')
+
+    ).values_list('amount', flat=True)
+
+
+
+
+
+
+
 
     for transaction in transactions:
         consumption += (transaction.price - transaction.discount)*transaction.volume
